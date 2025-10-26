@@ -1,7 +1,7 @@
 // ---- 設定 ----
 const TM_URL = "https://teachablemachine.withgoogle.com/models/K5ktd-aIl/";
 const PREDICTION_CONF_THRESH = 0.8;
-const WEBCAM_SIZE = 160;
+const WEBCAM_SIZE = 128;
 // --------------
 
 // 状態
@@ -20,21 +20,29 @@ async function setupWebcam() {
   webcam = new tmImage.Webcam(WEBCAM_SIZE, WEBCAM_SIZE, true);
   setStatus("カメラ初期化中…");
 
-  // 2秒で諦めて前面にフォールバックするヘルパ
-  async function trySetup(constraints) {
+  async function cleanup() {
+    try { await webcam.stop(); } catch (_) {}
+  }
+
+  // 5秒待ってダメなら次へ（失敗時は必ず stop して後始末）
+  async function trySetup(constraints, label) {
     try {
-      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 2000));
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 5000));
       await Promise.race([webcam.setup(constraints), timeout]);
+      // iOSの再生制限へのおまじない
+      const v = webcam.webcam;
+      if (v) { v.setAttribute("playsinline", "true"); v.muted = true; }
       return true;
     } catch (e) {
+      await cleanup();
       return false;
     }
   }
 
-  // 1) 背面（environment）を試す → 2) 前面（user） → 3) 既定値
-  let ok = await trySetup({ facingMode: { ideal: "environment" } });
-  if (!ok) ok = await trySetup({ facingMode: "user" });
-  if (!ok) ok = await trySetup(undefined);
+  // 1) 前面 → 2) 背面 → 3) 既定値
+  let ok = await trySetup({ facingMode: "user" }, "user");
+  if (!ok) ok = await trySetup({ facingMode: { ideal: "environment" } }, "env");
+  if (!ok) ok = await trySetup(undefined, "default");
 
   if (!ok) {
     setStatus("カメラ初期化に失敗しました。iPhoneの設定でChromeのカメラ許可をご確認ください。");
