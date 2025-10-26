@@ -18,12 +18,32 @@ async function loadModel() {
 
 async function setupWebcam() {
   webcam = new tmImage.Webcam(WEBCAM_SIZE, WEBCAM_SIZE, true);
-  await webcam.setup({ facingMode: "environment" }).catch((e) => {
-    setStatus("カメラ権限が許可されていません。ブラウザ設定をご確認ください。");
-    throw e;
-  });
+  setStatus("カメラ初期化中…");
+
+  // 2秒で諦めて前面にフォールバックするヘルパ
+  async function trySetup(constraints) {
+    try {
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 2000));
+      await Promise.race([webcam.setup(constraints), timeout]);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // 1) 背面（environment）を試す → 2) 前面（user） → 3) 既定値
+  let ok = await trySetup({ facingMode: { ideal: "environment" } });
+  if (!ok) ok = await trySetup({ facingMode: "user" });
+  if (!ok) ok = await trySetup(undefined);
+
+  if (!ok) {
+    setStatus("カメラ初期化に失敗しました。iPhoneの設定でChromeのカメラ許可をご確認ください。");
+    throw new Error("camera setup failed");
+  }
+
   await webcam.play();
   $("#webcam-container").appendChild(webcam.canvas);
+  setStatus("");
 }
 
 async function predictOnce() {
