@@ -1,118 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <title>都市鉱山AI判定</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>    
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>都市鉱山AI判定 Ver.2.1</title>
+
+    <!-- 顔検出は削除。tfjs と teachablemachine のみ -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <link rel="stylesheet" href="./styles/style.css" />
   </head>
   <body>
-    <h1>都市鉱山AI判定アプリ</h1>
-    <p>カメラに映した電子廃材をAIが分類します</p>
+    <main>
+      <h1>都市鉱山AI判定アプリ Ver.2.1</h1>
+      <p>カメラに映した電子廃材をAIが分類します（人が映っても止まりません）</p>
 
-    <button type="button" onclick="init()">AI起動</button>
-    <button type="button" onclick="stopAI()">AI終了</button>
-    <button onclick="testSpeak()">音声テスト</button>
+      <div class="controls">
+        <button id="btn-start" type="button">AI起動</button>
+        <button id="btn-stop" type="button" disabled>AI終了</button>
+        <button id="btn-speak" type="button">音声テスト</button>
+      </div>
 
-    <div id="webcam-container"></div>
-    <h2 id="label">待機中…</h2>
+      <div id="webcam-container"></div>
+      <h2 id="label">待機中…</h2>
+      <p id="status" class="status"></p>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-    <script>
-      const URL = "https://teachablemachine.withgoogle.com/models/-B4srkNTo/";
-      let model, webcam, maxPredictions;
-      let stopFlag = false;
-
-      async function init() {
-        stopFlag = false;
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-
-        model = await tmImage.load(modelURL, metadataURL);
-        webcam = new tmImage.Webcam(200, 200, true);
-        await webcam.setup();
-        await webcam.play();
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        maxPredictions = model.getTotalClasses();
-
-        speak("AIを起動しました");
-        window.requestAnimationFrame(loop);
-      }
-
-      async function loop() {
-        if (stopFlag || !webcam) return;
-        webcam.update();
-        await predict();
-        window.requestAnimationFrame(loop);
-      }
-
-      async function predict() {
-        const prediction = await model.predict(webcam.canvas);
-        let highestProb = 0;
-        let bestLabel = "";
-        for (let i = 0; i < prediction.length; i++) {
-          if (prediction[i].probability > highestProb) {
-            highestProb = prediction[i].probability;
-            bestLabel = prediction[i].className;
-          }
-        }
-
-        const result = document.getElementById("label");
-        result.innerText = bestLabel + "（" + (highestProb * 100).toFixed(1) + "%）";
-
-        if (highestProb > 0.8) {
-          if (bestLabel === "高銅") {
-            speak("宝のやま～");
-          } else if (bestLabel === "低銅") {
-            speak("やめとき～");
-          } else {
-            speak("ちょっとよくわからない");
-          }
-        }
-      }
-
-      function speak(text) {
-        const synth = window.speechSynthesis;
-        if (synth && !synth.speaking) {
-          const utter = new SpeechSynthesisUtterance(text);
-          utter.lang = "ja-JP";
-          setTimeout(() => synth.speak(utter), 100);
-        }
-      }
-
-      function testSpeak() {
-        const synth = window.speechSynthesis;
-        if (!synth) {
-          alert("Speech Synthesis API 非対応");
-          return;
-        }
-        const utter = new SpeechSynthesisUtterance("こんにちは、テストです。");
-        utter.lang = "ja-JP";
-        synth.speak(utter);
-      }
-
-      async function stopAI() {
-        stopFlag = true;
-
-        // 音声を即キャンセル
-        window.speechSynthesis.cancel();
-
-        // カメラ停止と要素削除
-        if (webcam) {
-          await webcam.stop();
-          if (webcam.canvas && webcam.canvas.parentNode) {
-            webcam.canvas.parentNode.removeChild(webcam.canvas);
-          }
-          webcam = null;
-        }
-
-        // 画面をクリア（100〜300ms遅らせて確実に処理）
-        setTimeout(() => {
-          document.getElementById("label").innerText = "待機中…";
-        }, 200);
-
-        // 音声で終了
-        speak("AIを終了します");
-      }
-    </script>
+    <!-- アプリ本体 -->
+    <script src="./scripts/utils.js"></script>
+    <script src="./scripts/speech.js"></script>
+    <script src="./scripts/ai.js"></script>
+    <script src="./scripts/main.js"></script>
   </body>
 </html>
