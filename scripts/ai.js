@@ -90,21 +90,34 @@ window.UrbanAI = {
   async start() {
     if (running) return;
     stopFlag = false;
+
+    // 先にカメラ！(iOSで「読み込み中」だけに見える問題を回避)
+    setLabel("カメラ準備中…");
+    setStatus("カメラ権限のダイアログが出たら［許可］を選んでください。");
+    try {
+      await setupWebcam();                 // ← 先にカメラ
+    } catch (e) {
+      setStatus("カメラ初期化に失敗しました。ブラウザ設定でカメラを許可してください。");
+      console.error(e);
+      return;
+    }
+
+    // 次にモデル読み込み
     setLabel("モデル読み込み中…");
     setStatus("");
-
     try {
-      await loadModel();
-      await setupWebcam();
-
-      speak("AIを起動しました");
-      setLabel("推論を開始します…");
-      running = true;
-      window.requestAnimationFrame(loop);
+      await loadModel();                   // ← あとからモデル
     } catch (e) {
-      setStatus("初期化でエラーが発生しました。ページを再読み込みしてください。");
+      setStatus("モデルの読み込みに失敗しました。通信状況をご確認の上、再読み込みしてください。");
       console.error(e);
+      return;
     }
+
+    // 準備完了
+    speak("AIを起動しました");
+    setLabel("推論を開始します…");
+    running = true;
+    window.requestAnimationFrame(loop);
   },
 
   async stop() {
