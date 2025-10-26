@@ -1,7 +1,7 @@
 // ---- 設定 ----
 const TM_URL = "https://teachablemachine.withgoogle.com/models/K5ktd-aIl/";
 const PREDICTION_CONF_THRESH = 0.8;
-const WEBCAM_SIZE = 224;
+const WEBCAM_SIZE = 160;
 // --------------
 
 // 状態
