@@ -1,7 +1,7 @@
 const btnStart = $("#btn-start");
 const btnStop  = $("#btn-stop");
 const btnSpeak = $("#btn-speak");
-const btnNyn = $("#btn-nyn");
+const btnButton = $("#btn-button");
 
 btnStart.addEventListener("click", async () => {
   btnStart.disabled = true;
@@ -21,6 +21,6 @@ btnSpeak.addEventListener("click", () => {
   UrbanAI.testSpeak();
 });
 
-btnNyn.addEventListener("click", () => {
-  UrbanAI.speakNyn();
+btnButton.addEventListener("click", () => {
+  UrbanAI.speakButton();
 });
