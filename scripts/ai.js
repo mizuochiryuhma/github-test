@@ -150,5 +150,8 @@ window.UrbanAI = {
 
   testSpeak() {
     speak("こんにちは、テストだにゃん。");
-  }
+  },
+
+  speakNyn() {
+    speak("にゃんにゃんにゃにゃんにゃにゃにゃにゃんにゃんにゃん");
 };
