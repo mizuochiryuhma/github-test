@@ -18,7 +18,7 @@ async function loadModel() {
 
 async function setupWebcam() {
   webcam = new tmImage.Webcam(WEBCAM_SIZE, WEBCAM_SIZE, true);
-  setStatus("カメラ初期化中にゃん…");
+  setStatus("カメラ初期化中…");
 
   async function cleanup() {
     try { await webcam.stop(); } catch (_) {}
@@ -45,7 +45,7 @@ async function setupWebcam() {
   if (!ok) ok = await trySetup(undefined, "default");
 
   if (!ok) {
-    setStatus("カメラ初期化に失敗したにゃん。iPhoneの設定でChromeのカメラ許可を確認してにゃん");
+    setStatus("カメラ初期化に失敗。iPhoneの設定でChromeのカメラ許可を確認してください。");
     throw new Error("camera setup failed");
   }
 
@@ -73,7 +73,7 @@ async function predictOnce() {
     } else if (bestLabel === "低銅") {
       speak("やめとき〜");
     } else {
-      speak("ちょっとよくわからないにゃん");
+      speak("ちょっとよくわからない");
     }
   }
 }
@@ -100,12 +100,12 @@ window.UrbanAI = {
     stopFlag = false;
 
     // 先にカメラ！(iOSで「読み込み中」だけに見える問題を回避)
-    setLabel("カメラ準備中にゃん…");
-    setStatus("カメラ権限のダイアログが出たら［許可］を選んでにゃん");
+    setLabel("カメラ準備中…");
+    setStatus("カメラ権限のダイアログが出たら［許可］を選んでください。");
     try {
       await setupWebcam();                 // ← 先にカメラ
     } catch (e) {
-      setStatus("カメラ初期化に失敗したにゃん。ブラウザ設定でカメラを許可してにゃん");
+      setStatus("カメラ初期化に失敗しました。ブラウザ設定でカメラを許可してください。");
       console.error(e);
       return;
     }
@@ -122,7 +122,7 @@ window.UrbanAI = {
     }
 
     // 準備完了
-    speak("にゃんを起動するにゃん！");
+    speak("エーアイを起動しています");
     setLabel("推論を開始します…");
     running = true;
     window.requestAnimationFrame(loop);
@@ -144,11 +144,11 @@ window.UrbanAI = {
       running = false;
       setLabel("待機中…");
       setStatus("");
-      speak("にゃんを終えるにゃん！");
+      speak("エーアイを終了しています");
     }
   },
 
   testSpeak() {
-    speak("こんにちは、テストだにゃん。");
+    speak("こんにちは、テストです。");
   }
 };
