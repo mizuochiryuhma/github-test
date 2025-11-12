@@ -122,7 +122,7 @@ window.UrbanAI = {
     }
 
     // 準備完了
-    speak("AIを起動しました");
+    speak("エーアイを起動しました");
     setLabel("推論を開始します…");
     running = true;
     window.requestAnimationFrame(loop);
@@ -144,11 +144,11 @@ window.UrbanAI = {
       running = false;
       setLabel("待機中…");
       setStatus("");
-      speak("AIを終了します");
+      speak("エーアイを終了します");
     }
   },
 
   testSpeak() {
-    speak("こんにちは、テストです。");
+    speak("こんにちは、テストででででで。");
   }
 };
