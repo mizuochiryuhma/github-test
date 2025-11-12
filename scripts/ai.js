@@ -149,6 +149,6 @@ window.UrbanAI = {
   },
 
   testSpeak() {
-    speak("こんにちは、テストででででで。");
+    speak("こんにちは、テストだにゃん❤❤。");
   }
 };
