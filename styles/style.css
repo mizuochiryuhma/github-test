@@ -1,0 +1,8 @@
+body { font-family: system-ui, sans-serif; margin: 24px; }
+main { max-width: 680px; margin: 0 auto; }
+.controls { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+#webcam-container { margin: 16px 0; }
+#label { margin: 8px 0; }
+.status { color: #666; font-size: 0.9rem; min-height: 1.2em; }
+button { padding: 8px 14px; border-radius: 10px; border: 1px solid #ddd; }
+button:disabled { opacity: 0.5; }
