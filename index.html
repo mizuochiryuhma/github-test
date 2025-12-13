@@ -49,6 +49,7 @@
         const prediction = await model.predict(webcam.canvas);
         let highestProb = 0;
         let bestLabel = "";
+
         for (let i = 0; i < prediction.length; i++) {
           if (prediction[i].probability > highestProb) {
             highestProb = prediction[i].probability;
@@ -57,16 +58,24 @@
         }
 
         const result = document.getElementById("label");
-        result.innerText = bestLabel + "（" + (highestProb * 100).toFixed(1) + "%）";
+        result.innerText =
+          bestLabel + "（" + (highestProb * 100).toFixed(1) + "%）";
 
-        if (highestProb > 0.8) {
+        const TH_STRICT = 0.8;
+        const TH_UNSURE = 0.5;
+
+        if (highestProb >= TH_STRICT && (bestLabel === "高銅" || bestLabel === "低銅")) {
           if (bestLabel === "高銅") {
             speak("宝のやま～");
-          } else if (bestLabel === "低銅") {
-            speak("やめとき～");
           } else {
-            speak("ちょっとよくわからない");
+            speak("やめとき～");
           }
+
+        } else if (highestProb >= TH_UNSURE) {
+          speak("ちょっとよくわからない");
+
+        } else {
+          speak("判定できません");
         }
       }
 
