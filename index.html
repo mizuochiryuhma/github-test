@@ -2,19 +2,22 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>都市鉱山AI判定</title>
+    <title>都市鉱山AI判定アプリ</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>    
+    <style>body {background-color: #1d3766; }</style>
   </head>
   <body>
-    <h1>都市鉱山AI判定アプリケーション</h1>
-    <p>カメラに映した電子廃材をAIが分類します</p>
+    <h1 style="text-align: center; background-color: #365896; color:#84a8b6; letter-spacing: 8px;"><strong>都市鉱山AI判定アプリ</strong></h1>
+    <h2 style="color: #84a8b6;">電子廃材をカメラに映すことで、どれだけの銅が含まれているかをAIが判別します</h2>
 
-    <button type="button" onclick="init()">AI起動</button>
-    <button type="button" onclick="stopAI()">AI終了</button>
     <button onclick="testSpeak()">音声テスト</button>
+    <p>
+        <button id="btn-start" type="button" style="width: 100px; height: 64px; color: #ffffff; background-color: forestgreen; border-radius: 16px;">AI起動</button>
+        <button id="btn-stop" type="button" disabled style="width: 100px; height: 64px; color: #ffffff; background-color: rgb(201, 36, 69); border-radius: 16px;">AI終了</button>
+    </p>
 
     <div id="webcam-container"></div>
-    <h2 id="label">待機中…</h2>
+    <h4 id="label" style="color: #15ff00;">待機中…</h4>
 
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
     <script>
@@ -123,5 +126,44 @@
         speak("AIを終了します");
       }
     </script>
+    <div class="how_to_use" style="background-color: #427a96; width: 640px;">
+        <h3 style="color: #33dbdb; font-size: 32px; text-align: center;">使用方法</h3>
+        <p style="color: #d4fcf8; size: 16px;">1, 「<strong>AI起動</strong>」ボタンを押します（カメラの使用を許可してください）</p>
+        <p style="color: #d4fcf8; size: 16px;">2, 起動後、判別したい廃材を用意してそれが真ん中にくるよう映します</p>
+        <p style="color: #d4fcf8; size: 16px;">3, AIがデータの統計から含まれている銅の量を推測し、判別してくれます！</p>
+    </div>
+    <div class="attention" style="background-color: #427a96; width: 640px;">
+     <h3 style="color: #db3333; font-size: 32px; text-align: center;">⚠注意⚠</h3>
+     <p style="color: #e4ad17;">・AIを使用する環境によって判定結果が変わる恐れがあります。ご使用の際は、<strong>常に同じ環境下</strong>で使用してください。</p>
+     <p style="color: #e4ad17;">・他人の顔を意図的に写さないでください。<strong>プライバシー権の侵害</strong>や、<strong>肖像権侵害</strong>に触れてしまう可能性があります。</p>
+    </div>
+    <div class="members" style="background-color: #427a96; width: 640px; height: 480px;">
+        <p style="color: #65f077; font-size: 32px; text-align: center;">
+            開発メンバー
+        </p>
+    <!-- インターネット上に一般公開されているとのことですので、本名を伏字としております。-->
+        <p style="color: #d4fcf8; font-size: 24px;">リーダー/電解精錬：XXXX XXX</p>
+        <p style="color: #d4fcf8; font-size: 20px;">副リーダー/プログラム：XXX XX</p>
+        <p style="color: #d4fcf8;">メンバー/電解精錬：XXX XXX</p>
+        <p style="color: #d4fcf8;">メンバー/プログラム：XXX XXX</p>
+        <p style="color: #d4fcf8;">メンバー/電解精錬：XXXX XXXXX</p>
+        <p style="color: #d4fcf8;">メンバー/電解精錬：XXXX XXX</p>
+        <p style="color: #d4fcf8;">メンバー/電解精錬：XXXX XXXX</p>
+        <p style="color: #d4fcf8; font-size: 24px;">監督/プログラム：XXXX XXXX</p>
+    </div>
+    <p style="color: #ffffff; text-align: right; text-decoration: underline;">バージョン 1.0<a href="https://abehiroshi.la.coocan.jp/" target="_blank" style="color: #ffffff;">.</a>0</p>
+    <!--（これは支援サービスのサイトに飛ばすだけで支援をもらえるわけでは）ないです。本当にもらいたいならアカウントでも作ってもらって、どうぞ。-->
+    <a href="https://buymeacoffee.com/" target="_blank" style="color: #41d633;">よろしければ支援をお願いします！</a>
+    
+    <style>
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+</style>
+
+<div style="overflow:hidden; width:100%; background-color: #365896; height: 48px;">
+  <p style="display:inline-block; padding-left:100%; white-space:nowrap; animation: scroll 256s linear infinite; color: #33dbdb; size: 16px;">このWebサイトはVisual Studio Codeを使用して作成されました。銅の判定AIはTeachable Machineを使用して作成されました。このWebサイトの一部はChatGPTを使用して生成されたコードを使用しています。このWebサイトはXXX XXによってデザインされました。このWebサイトのデザインはMicrosoft Edgeで作ったので他のサイトで正しく描画されているかはテストしていません。もし異常があった場合はこちらにご連絡ください"XXXXXXXXXXXX@XXXXX.XXX"(個人情報が含まれるため一部伏字としてあります) このWebサイトはVisual Studio Codeを使用して作成されました。あれ？さっき言ったっけ？ちょっと夜遅くに編集してるせいで記憶がぼんやりしてるな～ このウェブサイトは2年の努力を重ねてようやく完成させました。あはは、嘘です、2時間です。・・・もうちょっと少ないかも。</p>
+</div>
   </body>
 </html>
