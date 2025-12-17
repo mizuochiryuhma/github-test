@@ -25,33 +25,48 @@
       let model, webcam, maxPredictions;
       let stopFlag = false;
 
+ // ★ここに追加(音声合成の制御）★
+        let isRunning = false;
+        let rafId = null;
+        let lastSpoken = "";
+        let lastSpokenAt = 0;
+        const SPEAK_COOLDOWN_MS = 2500;
+
       async function init() {
-        stopFlag = false;
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
+ 　　　 if (isRunning) return;          // 多重起動防止
+  　　　isRunning = true;
+  　　　stopFlag = false;
+  　　　// 画面を初期化（カメラ枠が増えないように）
+  　　　const container = document.getElementById("webcam-container");
+  　　　container.innerHTML = "";
+  　　　// ボタン状態切替
+  　　　document.getElementById("btn-start").disabled = true;
+  　　　document.getElementById("btn-stop").disabled = false;
+  　　　const modelURL = URL + "model.json";
+  　　　const metadataURL = URL + "metadata.json";
+ 　　　 model = await tmImage.load(modelURL, metadataURL);
+  　　　webcam = new tmImage.Webcam(200, 200, true);
+  　　　await webcam.setup();
+  　　　await webcam.play();
+  　　　container.appendChild(webcam.canvas);
+  　　　maxPredictions = model.getTotalClasses();
+  　　　speakOnce("AIを起動しました");
+  　　　rafId = window.requestAnimationFrame(loop);
+　　　}
 
-        model = await tmImage.load(modelURL, metadataURL);
-        webcam = new tmImage.Webcam(200, 200, true);
-        await webcam.setup();
-        await webcam.play();
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        maxPredictions = model.getTotalClasses();
-
-        speak("AIを起動しました");
-        window.requestAnimationFrame(loop);
-      }
-
-      async function loop() {
-        if (stopFlag || !webcam) return;
-        webcam.update();
-        await predict();
-        window.requestAnimationFrame(loop);
-      }
+     async function loop() {
+  if (stopFlag || !webcam) return;
+  webcam.update();
+  await predict();
+  rafId = window.requestAnimationFrame(loop);
+　　　}
 
       async function predict() {
         const prediction = await model.predict(webcam.canvas);
         let highestProb = 0;
         let bestLabel = "";
+
+       
 
         for (let i = 0; i < prediction.length; i++) {
           if (prediction[i].probability > highestProb) {
@@ -69,20 +84,20 @@
 
         if (highestProb >= TH_STRICT && (bestLabel === "高銅" || bestLabel === "低銅")) {
           if (bestLabel === "高銅") {
-            speak("宝のやま～");
+            speakOnce("宝のやま～");
           } else {
-            speak("やめとき～");
+            speakOnce("やめとき～");
           }
 
         } else if (highestProb >= TH_UNSURE) {
-          speak("ちょっとよくわからない");
+          speakOnce("ちょっとよくわからない");
 
         } else {
-          speak("判定できません");
+          speakOnce("判定できません");
         }
       }
 
-      function speak(text) {
+      function speakOnce(text) {
         const synth = window.speechSynthesis;
         if (synth && !synth.speaking) {
           const utter = new SpeechSynthesisUtterance(text);
@@ -90,6 +105,25 @@
           setTimeout(() => synth.speak(utter), 100);
         }
       }
+function speakOnce(text) {
+  const now = Date.now();
+
+  // 同じ文言を短時間で繰り返さない
+  if (text === lastSpoken && (now - lastSpokenAt) < SPEAK_COOLDOWN_MS) return;
+
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+
+  // しゃべっている最中は追加しない
+  if (synth.speaking) return;
+
+  lastSpoken = text;
+  lastSpokenAt = now;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "ja-JP";
+  setTimeout(() => synth.speak(utter), 50);
+}
 
       function testSpeak() {
         const synth = window.speechSynthesis;
@@ -102,29 +136,36 @@
         synth.speak(utter);
       }
 
-      async function stopAI() {
-        stopFlag = true;
+    async function stopAI() {
+  stopFlag = true;
+  isRunning = false;
 
-        // 音声を即キャンセル
-        window.speechSynthesis.cancel();
+  // ループ停止
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
 
-        // カメラ停止と要素削除
-        if (webcam) {
-          await webcam.stop();
-          if (webcam.canvas && webcam.canvas.parentNode) {
-            webcam.canvas.parentNode.removeChild(webcam.canvas);
-          }
-          webcam = null;
-        }
+  // 音声停止
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 
-        // 画面をクリア（100〜300ms遅らせて確実に処理）
-        setTimeout(() => {
-          document.getElementById("label").innerText = "待機中…";
-        }, 200);
+  // カメラ停止
+  if (webcam) {
+    await webcam.stop();
+    webcam = null;
+  }
 
-        // 音声で終了
-        speak("AIを終了します");
-      }
+  // 画面掃除
+  document.getElementById("webcam-container").innerHTML = "";
+  document.getElementById("label").innerText = "待機中…";
+
+  // ボタン状態を戻す
+  document.getElementById("btn-start").disabled = false;
+  document.getElementById("btn-stop").disabled = true;
+
+  speakOnce("AIを終了します");
+}
+
     </script>
     <div class="how_to_use" style="background-color: #427a96; width: 640px;">
         <h3 style="color: #33dbdb; font-size: 32px; text-align: center;">使用方法</h3>
