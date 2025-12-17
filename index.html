@@ -12,8 +12,8 @@
 
     <button onclick="testSpeak()">音声テスト</button>
     <p>
-        <button id="btn-start" type="button" style="width: 100px; height: 64px; color: #ffffff; background-color: forestgreen; border-radius: 16px;">AI起動</button>
-        <button id="btn-stop" type="button" disabled style="width: 100px; height: 64px; color: #ffffff; background-color: rgb(201, 36, 69); border-radius: 16px;">AI終了</button>
+        <button id="btn-start" type="button" onclick="init()" style="width: 100px; height: 64px; color: #ffffff; background-color: forestgreen; border-radius: 16px;">AI起動</button>
+        <button id="btn-stop" type="button" onclick="stopAI()" disabled style="width: 100px; height: 64px; color: #ffffff; background-color: rgb(201, 36, 69); border-radius: 16px;">AI終了</button>
     </p>
 
     <div id="webcam-container"></div>
